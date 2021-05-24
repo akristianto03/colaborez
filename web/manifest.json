@@ -1,0 +1,23 @@
+{
+    "name": "colaborez",
+    "short_name": "colaborez",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Colaborez merupakan aplikasi yang berfungsi sebagai pencari partner kerja yang dimulai dengan memposting ide bisnis dari suatu user dan user lain dapat memberikan request untuk berkolaborasi dalam kerja sama",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "241560703774",
+    "project_id": "colaborez",
+    "storage_bucket": "colaborez.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241560703774:android:33c7e464357c9fabeb2f0f",
+        "android_client_info": {
+          "package_name": "com.example.colaborez"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241560703774-0j241ue590mru12hhle4sp4p6avo1gdc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7ZLXj3GV5XUQYwF4glPerJzzU3YYB27Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241560703774-0j241ue590mru12hhle4sp4p6avo1gdc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

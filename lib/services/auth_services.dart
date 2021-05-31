@@ -98,7 +98,7 @@ class AuthServices {
 
     String uid = auth.currentUser.uid;
 
-    ref = FirebaseStorage.instance.ref().child("images").child(uid+"png");
+    ref = FirebaseStorage.instance.ref().child("images").child(uid+".png");
     uploadTask = ref.putFile(File(imgFile.path));
 
     await uploadTask.whenComplete(() =>

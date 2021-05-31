@@ -39,6 +39,11 @@ class MyApp extends StatelessWidget {
         AddPost.routeName : (context) => AddPost(),
         //detail
         DetailPost.routeName : (context) => DetailPost(),
+        JoinIdea.routeName : (context) => JoinIdea(),
+        MyIdeas.routeName : (context) => MyIdeas(),
+        MyDetailPost.routeName : (context) => MyDetailPost(),
+        EditPost.routeName : (context) => EditPost(),
+
       },
     );
   }

@@ -29,3 +29,7 @@ part 'main/searchpage.dart';
 
 //detail
 part 'detail/detailpage.dart';
+part 'detail/joinpage.dart';
+part 'detail/myideas.dart';
+part 'detail/mydetailpage.dart';
+part 'detail/myeditideas.dart';

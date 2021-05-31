@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:colaborez/models/models.dart';
 import 'package:colaborez/services/services.dart';
 import 'package:colaborez/shared/shared.dart';
 import 'package:colaborez/ui/pages/pages.dart';
@@ -14,3 +16,6 @@ part 'no_account_text.dart';
 part 'loading.dart';
 part 'icon_button_border.dart';
 part 'rounded_icon_button.dart';
+part 'profilemenu.dart';
+part 'ideapostcard.dart';
+part 'detail_widgets.dart';

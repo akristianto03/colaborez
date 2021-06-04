@@ -20,15 +20,17 @@ class ActivityServices {
     );
   }
 
-  static Container loadings() {
-    return Container(
-      alignment: Alignment.center,
-      width: double.infinity,
-      height: double.infinity,
-      color: cSeccondaryColor,
-      child: SpinKitChasingDots(
-        size: 50,
-        color: cPrimaryColor,
+  static Expanded loadings() {
+    return Expanded(
+      child: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: double.infinity,
+        color: cSeccondaryColor,
+        child: SpinKitChasingDots(
+          size: 50,
+          color: cPrimaryColor,
+        ),
       ),
     );
 

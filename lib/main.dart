@@ -43,7 +43,8 @@ class MyApp extends StatelessWidget {
         MyIdeas.routeName : (context) => MyIdeas(),
         MyDetailPost.routeName : (context) => MyDetailPost(),
         EditPost.routeName : (context) => EditPost(),
-
+        ProfileSettings.routeName : (context) => ProfileSettings(),
+        EditProfile.routeName : (context) => EditProfile(),
       },
     );
   }

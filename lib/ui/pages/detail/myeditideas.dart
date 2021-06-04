@@ -22,6 +22,8 @@ class _EditPostState extends State<EditPost> {
   final ImagePicker imagePicker = ImagePicker();
   String dropdownValue;
   int participant;
+  TextEditingController ctrlTitle = TextEditingController();
+  TextEditingController ctrlDesc = TextEditingController();
 
   Future chooseFile(String type) async{
     ImageSource imgSrc;
@@ -84,13 +86,20 @@ class _EditPostState extends State<EditPost> {
     }
   }
 
+  void initState() {
+    super.initState();
+  }
+  int con=0;
   @override
   Widget build(BuildContext context) {
     final MyEditArgument args = ModalRoute.of(context).settings.arguments as MyEditArgument;
-    final ctrlTitle = TextEditingController(text: args.idea.ideaTitle);
-    final ctrlDesc = TextEditingController(text: args.idea.ideaDesc);
-    dropdownValue = args.idea.ideaCategory;
-    participant = args.idea.ideaMaxParticipants;
+    if(con==0) {
+      ctrlTitle = TextEditingController(text: args.idea.ideaTitle);
+      ctrlDesc = TextEditingController(text: args.idea.ideaDesc);
+      dropdownValue = args.idea.ideaCategory;
+      participant = args.idea.ideaMaxParticipants;
+    }
+    con=1;
 
     return Scaffold(
       appBar: AppBar(
@@ -144,9 +153,9 @@ class _EditPostState extends State<EditPost> {
                               key: _formKey,
                               child: Column(
                                 children: [
-                                  buildFormTitle(ctrlTitle),
+                                  buildFormTitle(),
                                   SizedBox(height: getProportionateScreenHeight(20),),
-                                  buildFormDesc(ctrlDesc),
+                                  buildFormDesc(),
                                   SizedBox(height: getProportionateScreenHeight(20),),
                                   buildFormCategory(),
                                   SizedBox(height: getProportionateScreenHeight(20),),
@@ -161,19 +170,20 @@ class _EditPostState extends State<EditPost> {
                                           isLoading = true;
                                         });
                                         Ideas ideas = Ideas(args.idea.ideaId, ctrlTitle.text, ctrlDesc.text, dropdownValue, "", participant, 1, args.idea.ideaBy, "", "");
+
                                         await IdeaServices.updateIdea(ideas, imageFile).then((value) {
                                           if (value == true) {
                                             ActivityServices.showToast("Idea updated", cPrimaryColor);
                                             setState(() {
                                               isLoading = false;
                                             });
-                                            Navigator.pushNamedAndRemoveUntil(context, MyIdeas.routeName, ModalRoute.withName('/'));
+                                            Navigator.pushNamedAndRemoveUntil(context, MyIdeas.routeName, ModalRoute.withName(MainMenu.routeName));
                                           } else {
                                             ActivityServices.showToast("Error update idea", cPrimaryColor);
                                             setState(() {
                                               isLoading = false;
                                             });
-                                            Navigator.pushReplacementNamed(context, MainMenu.routeName);
+                                            Navigator.pushNamedAndRemoveUntil(context, MainMenu.routeName, ModalRoute.withName('/'));
                                           }
                                         });
                                       }
@@ -183,7 +193,6 @@ class _EditPostState extends State<EditPost> {
                                 ],
                               ),
                             ),
-
                             SizedBox(height: SizeConfig.screenHeight * 0.05,),
                           ],
                         ),
@@ -208,7 +217,7 @@ class _EditPostState extends State<EditPost> {
           dropdownValue = value;
         });
       },
-      items: <String>['Culinary', 'Services', 'Design', 'Photography/Viedography', 'Non-Profit', 'Industry']
+      items: <String>['Culinary', 'Services', 'Design', 'Studio', 'Non-Profit', 'Industry']
           .map<DropdownMenuItem<String>>((value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -223,7 +232,7 @@ class _EditPostState extends State<EditPost> {
     );
   }
 
-  TextFormField buildFormDesc(TextEditingController ctrlDesc) {
+  TextFormField buildFormDesc() {
     return TextFormField(
       controller: ctrlDesc,
       maxLines: 3,
@@ -251,7 +260,7 @@ class _EditPostState extends State<EditPost> {
     );
   }
 
-  TextFormField buildFormTitle(TextEditingController ctrlTitle) {
+  TextFormField buildFormTitle() {
     return TextFormField(
       controller: ctrlTitle,
       onChanged: (value) {

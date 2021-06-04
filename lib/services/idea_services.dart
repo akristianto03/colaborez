@@ -79,12 +79,24 @@ class IdeaServices{
           ref.getDownloadURL().then((value) => imgUrl = value,)
       );
 
-      ideaCollection.doc(ideas.ideaId).update({
+      await ideaCollection.doc(ideas.ideaId).update({
         'ideaImage' : imgUrl,
       });
     }
 
     return true;
+  }
+
+  static Future<bool> deleteIdea(String id) async {
+    bool msg = true;
+    await Firebase.initializeApp();
+    await ideaCollection.doc(id).delete().then((value) {
+      msg = true;
+    }).catchError((onError) {
+      msg = false;
+    });
+
+    return msg;
   }
 
   // static Future<String> getUserIdeaUserFirstName(String ideaBy) async {

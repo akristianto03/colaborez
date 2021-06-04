@@ -31,15 +31,15 @@ class _MyDetailPostState extends State<MyDetailPost> {
                   setState(() {
                     isLoading = true;
                   });
-                  await IdeaServices.joinIdea(ideas).then((value) {
+                  await IdeaServices.deleteIdea(ideas.ideaId).then((value) {
                     setState(() {
                       isLoading = false;
                     });
                     if (value == true) {
-                      ActivityServices.showToast("Your request has been send!", cPrimaryColor);
-                      Navigator.pushReplacementNamed(context, JoinIdea.routeName);
+                      ActivityServices.showToast("Idea deleted!", cDangerColor);
+                      Navigator.pushNamedAndRemoveUntil(context, MyIdeas.routeName, ModalRoute.withName(MainMenu.routeName));
                     } else {
-                      ActivityServices.showToast("Can't request join idea", cDangerColor);
+                      ActivityServices.showToast("Can't delete idea", cDangerColor);
                     }
                   });
                 },
@@ -70,126 +70,133 @@ class _MyDetailPostState extends State<MyDetailPost> {
     return Scaffold(
       backgroundColor: Color(0xFFF5F6F9),
       appBar: CustomAppbar(),
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(
-            width: getProportionateScreenWidth(238),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.network(
-                args.idea.ideaImage,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          TopRoundedContainer(
-            color: Colors.white,
-            child: Column(
-              children: [
-                ProductDescription(
-                  pressOnSeeMore: () {},
-                  idea: args.idea,
-                ),
-                TopRoundedContainer(
-                  color: Color(0xFFF5F6F9),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenWidth(20)
-                        ),
-                        child: Row(
-                          children: [
-                            ...List.generate(
-                                4,
-                                    (index) => ParticipantCircleView()
-                            ),
-                            Spacer(),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.arrow_forward_ios),
-                              color: cTextColor,
-                            )
-                          ],
-                        ),
-                      ),
-                      TopRoundedContainer(
-                        color: Colors.white,
-                        child: Stack(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: SizeConfig.screenWidth * 0.08,
-                                  right: SizeConfig.screenWidth * 0.08,
-                                  top: getProportionateScreenWidth(15),
-                                  bottom: getProportionateScreenWidth(40)
-                              ),
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: SizeConfig.screenWidth * 0.4,
-                                      height: getProportionateScreenHeight(56),
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                            context, EditPost.routeName,
-                                            arguments: MyEditArgument(args.idea)
-                                          );
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: cPrimaryColor,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(15)
-                                          )
-                                        ),
-                                        child: Text(
-                                          "Edit",
-                                          style: TextStyle(
-                                              fontSize: getProportionateScreenWidth(18),
-                                              color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    SizedBox(
-                                      width: SizeConfig.screenWidth * 0.4,
-                                      height: getProportionateScreenHeight(56),
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showConfirmDialog(context, args.idea);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            primary: cDangerColor,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15)
-                                            )
-                                        ),
-                                        child: Text(
-                                          "Delete",
-                                          style: TextStyle(
-                                              fontSize: getProportionateScreenWidth(18),
-                                              color: Colors.white
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+          Column(
+            children: [
+              SizedBox(
+                width: getProportionateScreenWidth(238),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.network(
+                    args.idea.ideaImage,
+                    fit: BoxFit.cover,
                   ),
-                )
-              ],
-            ),
-          )
+                ),
+              ),
+              TopRoundedContainer(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    ProductDescription(
+                      pressOnSeeMore: () {},
+                      idea: args.idea,
+                    ),
+                    TopRoundedContainer(
+                      color: Color(0xFFF5F6F9),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(20)
+                            ),
+                            child: Row(
+                              children: [
+                                ...List.generate(
+                                    4,
+                                        (index) => ParticipantCircleView()
+                                ),
+                                Spacer(),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.arrow_forward_ios),
+                                  color: cTextColor,
+                                )
+                              ],
+                            ),
+                          ),
+                          TopRoundedContainer(
+                            color: Colors.white,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                      left: SizeConfig.screenWidth * 0.08,
+                                      right: SizeConfig.screenWidth * 0.08,
+                                      top: getProportionateScreenWidth(15),
+                                      bottom: getProportionateScreenWidth(40)
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: SizeConfig.screenWidth * 0.4,
+                                          height: getProportionateScreenHeight(56),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                context, EditPost.routeName,
+                                                arguments: MyEditArgument(args.idea)
+                                              );
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary: cPrimaryColor,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(15)
+                                              )
+                                            ),
+                                            child: Text(
+                                              "Edit",
+                                              style: TextStyle(
+                                                  fontSize: getProportionateScreenWidth(18),
+                                                  color: Colors.white
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        SizedBox(
+                                          width: SizeConfig.screenWidth * 0.4,
+                                          height: getProportionateScreenHeight(56),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              showConfirmDialog(context, args.idea);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                primary: cDangerColor,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(15)
+                                                )
+                                            ),
+                                            child: Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                  fontSize: getProportionateScreenWidth(18),
+                                                  color: Colors.white
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+          isLoading == true
+              ? ActivityServices.loadings()
+              : Container()
         ],
       ),
     );

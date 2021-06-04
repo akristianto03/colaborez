@@ -11,7 +11,7 @@ class _MyIdeasState extends State<MyIdeas> {
 
   String uid = FirebaseAuth.instance.currentUser.uid;
   CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
-  bool isLoading = true;
+  bool isLoading = false;
 
   // bool show = false;
   // getDataIdea(Ideas ideas) {
@@ -81,7 +81,7 @@ class _MyIdeasState extends State<MyIdeas> {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

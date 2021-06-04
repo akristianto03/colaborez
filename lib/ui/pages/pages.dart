@@ -33,3 +33,5 @@ part 'detail/joinpage.dart';
 part 'detail/myideas.dart';
 part 'detail/mydetailpage.dart';
 part 'detail/myeditideas.dart';
+part 'detail/profilesettings.dart';
+part 'detail/editprofile.dart';

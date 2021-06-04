@@ -166,14 +166,16 @@ class _AddPostState extends State<AddPost> {
                               ],
                             ),
                           ),
-
                           SizedBox(height: SizeConfig.screenHeight * 0.05,),
                         ],
                       ),
                     ),
                   ),
                 ],
-              )
+              ),
+              isLoading == true
+                  ? ActivityServices.loadings()
+                  : Container()
             ],
           )
         ),

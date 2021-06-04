@@ -92,6 +92,37 @@ class AuthServices {
 
   }
 
+  static Future<bool> upDate(Users users, PickedFile imgFile) async {
+    await Firebase.initializeApp();
+    String dateNow = ActivityServices.dateNow();
+
+    String uid = auth.currentUser.uid;
+
+    await userCollection.doc(uid).update({
+      'firstName': users.firstName,
+      'lastName': users.lastName,
+      'phone': users.phone,
+      'address': users.address,
+      'createdAt': dateNow,
+      'updatedAt': dateNow,
+    });
+
+    if (imgFile != null) {
+      ref = FirebaseStorage.instance.ref().child("images").child(uid+".png");
+      uploadTask = ref.putFile(File(imgFile.path));
+
+      await uploadTask.whenComplete(() =>
+          ref.getDownloadURL().then((value) => imgUrl = value,)
+      );
+
+      await userCollection.doc(uid).update({
+        'pic' : imgUrl,
+      });
+    }
+
+    return true;
+  }
+
   static Future<bool> changeProfilePicture(PickedFile imgFile) async {
     await Firebase.initializeApp();
     String dateNow = ActivityServices.dateNow();
@@ -111,6 +142,19 @@ class AuthServices {
     });
 
     return true;
+  }
+
+  static Future<bool> deleteUser(String id) async {
+    await Firebase.initializeApp();
+    bool msg = true;
+    await userCollection.doc(id).delete().then((value) {
+      msg = true;
+      auth.currentUser.delete();
+    }).catchError((onError) {
+      msg = false;
+    });
+
+    return msg;
   }
 
 }

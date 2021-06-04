@@ -18,6 +18,14 @@ class _ProfileState extends State<Profile> {
         title: Text(
           'Profile'
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings, color: cTextColor,),
+            onPressed: () {
+              Navigator.pushNamed(context, ProfileSettings.routeName);
+            },
+          )
+        ],
       ),
       body: Stack(
         children: [

@@ -57,7 +57,6 @@ class _ParticipantsState extends State<Participants> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: ParticipantMenu(
-                          press: () {},
                           participantId: doc.data()['uid'],
                         ),
                       );
@@ -75,10 +74,9 @@ class _ParticipantsState extends State<Participants> {
 
 class ParticipantMenu extends StatefulWidget {
   const ParticipantMenu({
-    Key key, this.press, this.participantId,
+    Key key, this.participantId,
   }) : super(key: key);
 
-  final Function press;
   final String participantId;
 
   @override
@@ -125,7 +123,12 @@ class _ParticipantMenuState extends State<ParticipantMenu> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5),
       child: GestureDetector(
-        onTap: widget.press,
+        onTap: () {
+          Navigator.pushNamed(
+            context, OtherUser.routeName,
+            arguments: OtherUserArgument(users)
+          );
+        },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

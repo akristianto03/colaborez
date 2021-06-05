@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 part 'default_button.dart';
 part 'custom_suffix_icon.dart';
@@ -19,3 +20,5 @@ part 'rounded_icon_button.dart';
 part 'profilemenu.dart';
 part 'ideapostcard.dart';
 part 'detail_widgets.dart';
+part 'iconname.dart';
+part 'profilepic.dart';

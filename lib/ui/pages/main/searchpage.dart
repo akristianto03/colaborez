@@ -152,7 +152,6 @@ class _SearchState extends State<Search> {
                                             );
                                           // }
                                         }
-                                        print("data size : "+ snapshot.data.size.toString() + " Size normal : " + size.toString());
                                         size++;
                                         // con = 1;
                                         return Container();

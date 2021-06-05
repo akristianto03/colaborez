@@ -37,3 +37,5 @@ part 'detail/myeditideas.dart';
 part 'detail/profilesettings.dart';
 part 'detail/editprofile.dart';
 part 'detail/participants.dart';
+part 'detail/profileinfo.dart';
+part 'detail/otheruserinfo.dart';

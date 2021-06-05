@@ -56,12 +56,33 @@ class _JoinIdeaState extends State<JoinIdea> {
                   ),
                 ),
                 SizedBox(height: 20,),
-                ProfileMenu(
-                  press: () {
+                GestureDetector(
+                  onTap: () {
                     launchWA(args.users.phone);
                   },
-                  text: "Contact Him/Her",
-                  icon: CupertinoIcons.phone,
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0, 10),
+                              blurRadius: 50,
+                              color: cTextColor.withOpacity(0.23)
+                          )
+                        ]
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconName(
+                          name: "Contact via Whatsapp",
+                          icon: CupertinoIcons.phone,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(height: 20,),
                 DefaultButton(

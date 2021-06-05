@@ -1,6 +1,35 @@
 part of '../pages.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  String uid = FirebaseAuth.instance.currentUser.uid;
+  CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
+  CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
+
+  dynamic data;
+
+  Future<dynamic> getDataUser() async {
+    final DocumentReference document = userCollection.doc(uid);
+
+    await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+      setState(() {
+        data =snapshot.data;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+
+    super.initState();
+    getDataUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -8,18 +37,21 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: cPrimaryColor,
-        leading: IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
-          onPressed: () {},
-        ),
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.menu,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {},
+        // ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderWithSearchBox(),
+            HeaderWithSearchBox(
+              name: data()['firstName'],
+              pic: data()['pic'],
+            ),
             SizedBox(height: SizeConfig.screenHeight * 0.02,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -54,32 +86,72 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  RecentCardView(
-                    categoryName: 'Culinary',
-                    image: 'assets/images/food.jpg',
-                    press: () {},
+            StreamBuilder(
+              stream: ideaCollection.where('ideaBy', isNotEqualTo: uid).snapshots(),
+              builder: (BuildContext contex, AsyncSnapshot<QuerySnapshot> snapshot){
+                if (snapshot.hasError) {
+                  return Text("Failed to load post");
+                }
+
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: new Row(
+                    children: snapshot.data.docs.map((DocumentSnapshot doc) {
+                      Ideas ideas;
+                      ideas = new Ideas(
+                        doc.data()['ideaId'],
+                        doc.data()['ideaTitle'],
+                        doc.data()['ideaDesc'],
+                        doc.data()['ideaCategory'],
+                        doc.data()['ideaImage'],
+                        doc.data()['ideaMaxParticipants'],
+                        doc.data()['ideaParticipant'],
+                        doc.data()['ideaBy'],
+                        doc.data()['createdAt'],
+                        doc.data()['updatedAt'],
+                      );
+                      int size = 1;
+                      bool showIdea = false;
+                      bool block = false;
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: ideaCollection.doc(ideas.ideaId).collection('participants').snapshots(),
+                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                          if (snapshot.hasError) {
+                            return Container();
+                          }
+
+                          return Row(
+                            children: snapshot.data.docs.map((DocumentSnapshot doc) {
+                              if (doc.data()['uid'] == uid) {
+                                showIdea = false;
+                                block = true;
+                              } else if (snapshot.data.size > size) {
+                                showIdea = false;
+                              } else {
+                                showIdea = true;
+                              }
+                              if (showIdea && !block) {
+                                return RecentCardView(
+                                  categoryName: ideas.ideaCategory,
+                                  image: ideas.ideaImage,
+                                  press: () {
+                                    Navigator.pushNamed(
+                                      context, DetailPost.routeName,
+                                      arguments: DetailArgument(ideas),
+                                    );
+                                  },
+                                );
+                              }
+                              size++;
+                              return Container();
+                            }).toList(),
+                          );
+                        },
+                      );
+                    }).toList(),
                   ),
-                  RecentCardView(
-                    categoryName: 'Visual',
-                    image: 'assets/images/visual.jpg',
-                    press: () {},
-                  ),
-                  RecentCardView(
-                    categoryName: 'Marketing',
-                    image: 'assets/images/marketing.jpg',
-                    press: () {},
-                  ),
-                  RecentCardView(
-                    categoryName: 'Culinary',
-                    image: 'assets/images/food.jpg',
-                    press: () {},
-                  ),
-                ],
-              ),
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -242,12 +314,19 @@ class RecentCardView extends StatelessWidget {
                 topRight: Radius.circular(10),
                 topLeft: Radius.circular(10),
               ),
-              child: Image.asset(
-                image,
-                width: SizeConfig.screenWidth * 0.35,
-                height: 125,
-                fit: BoxFit.cover,
-              )
+              child: image == cDefaultPicture
+                  ? Image.asset(
+                    image,
+                    width: SizeConfig.screenWidth * 0.35,
+                    height: 125,
+                    fit: BoxFit.cover,
+                  )
+                  : Image.network(
+                    image,
+                    width: SizeConfig.screenWidth * 0.35,
+                    height: 125,
+                    fit: BoxFit.cover,
+                  )
             ),
             Container(
               padding: EdgeInsets.only(
@@ -289,8 +368,11 @@ class RecentCardView extends StatelessWidget {
 
 class HeaderWithSearchBox extends StatelessWidget {
   const HeaderWithSearchBox({
-    Key key,
+    Key key, this.name, this.pic,
   }) : super(key: key);
+
+  final String name;
+  final String pic;
 
   @override
   Widget build(BuildContext context) {
@@ -313,50 +395,75 @@ class HeaderWithSearchBox extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(vertical: getProportionateScreenHeight(30)),
-                  child: Text(
-                    'Hi Fredo!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 36
-                    ),
+                  child: Row(
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            "Hi "+name+"!",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 36
+                            ),
+                          ),
+                          Text(
+                            "Have a Nice Day",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(width: getProportionateScreenWidth(80),),
+                      SizedBox(
+                        height: 80,
+                        width: 80,
+                        child: CircleAvatar(
+                          backgroundImage: pic == cDefaultPicture
+                              ? AssetImage(pic)
+                              : NetworkImage(pic),
+                        ),
+                      )
+                    ],
                   ),
                 )
               ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(25)),
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(0, 10),
-                    blurRadius: 50,
-                    color: cTextColor.withOpacity(0.23)
-                  )
-                ]
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search Ideas",
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: cTextColor,
-                  ),
-                ),
-              ),
-            ),
-          )
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     alignment: Alignment.center,
+          //     margin: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(25)),
+          //     height: 60,
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       borderRadius: BorderRadius.circular(20),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           offset: Offset(0, 10),
+          //           blurRadius: 50,
+          //           color: cTextColor.withOpacity(0.23)
+          //         )
+          //       ]
+          //     ),
+          //     child: TextField(
+          //       decoration: InputDecoration(
+          //         hintText: "Search Ideas",
+          //         enabledBorder: InputBorder.none,
+          //         focusedBorder: InputBorder.none,
+          //         suffixIcon: Icon(
+          //           Icons.search,
+          //           color: cTextColor,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

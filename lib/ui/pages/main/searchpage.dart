@@ -10,48 +10,55 @@ class _SearchState extends State<Search> {
   String uid = FirebaseAuth.instance.currentUser.uid;
   CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
   bool isLoading = true;
-
-  // bool show = false;
-  // getDataIdea(Ideas ideas) {
-  //   try {
-  //     ideaCollection.doc(ideas.ideaBy).collection('participants').doc(uid).get();
-  //     show =false;
-  //   } catch (e) {
-  //     show = true;
-  //   }
-  //
-  // }
+  
+  Future<bool> checkShow(String uid) async {
+    bool msg = false;
+    var a = await ideaCollection.where('uid', isEqualTo: uid).get();
+    if (a.docs[0]['uid'] != null) {
+      msg = false;
+    } else {
+      msg = true;
+    }
+    return msg;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-          height: 50,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                    offset: Offset(0, 10),
-                    blurRadius: 50,
-                    color: cTextColor.withOpacity(0.23)
-                )
-              ]
-          ),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Search Ideas.',
-            ),
+        // title: Container(
+        //   height: 50,
+        //   decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.circular(20),
+        //       boxShadow: [
+        //         BoxShadow(
+        //             offset: Offset(0, 10),
+        //             blurRadius: 50,
+        //             color: cTextColor.withOpacity(0.23)
+        //         )
+        //       ]
+        //   ),
+        //   child: TextField(
+        //     decoration: InputDecoration(
+        //       hintText: 'Search Ideas.',
+        //     ),
+        //   ),
+        // ),
+        title: Text(
+          "Explore",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold
           ),
         ),
         backgroundColor: cPrimaryColor,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.white,),
-            onPressed: () {},
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.search, color: Colors.white,),
+        //     onPressed: () {},
+        //   )
+        // ],
       ),
       body: SafeArea(
         child: Stack(
@@ -112,11 +119,9 @@ class _SearchState extends State<Search> {
                                   doc.data()['createdAt'],
                                   doc.data()['updatedAt'],
                                 );
-                                // return IdeaPostCardView(
-                                //   ideas: ideas,
-                                // );
-                                // getDataIdea(ideas);
-                                int con = 0;
+                                int size = 1;
+                                bool showIdea = false;
+                                bool block = false;
                                 return StreamBuilder<QuerySnapshot>(
                                   stream: ideaCollection.doc(ideas.ideaId).collection('participants').snapshots(),
                                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -129,20 +134,47 @@ class _SearchState extends State<Search> {
 
                                     return Column(
                                       children: snapshot.data.docs.map((DocumentSnapshot doc) {
-                                        if (doc.data()['uid'] != uid && con == 0) {
-                                          con = 1;
-                                          return IdeaPostCardView(
-                                            ideas: ideas,
-                                            routename: DetailPost.routeName,
-                                            argument: DetailArgument(ideas),
-                                          );
+                                        if (doc.data()['uid'] == uid) {
+                                          showIdea = false;
+                                          block = true;
+                                        } else if (snapshot.data.size > size) {
+                                          showIdea = false;
+                                        } else {
+                                          showIdea = true;
                                         }
-                                        con = 1;
+                                        if (showIdea && !block) {
+                                          // if (con == 0) {
+                                          //   con = 1;
+                                            return IdeaPostCardView(
+                                              ideas: ideas,
+                                              routename: DetailPost.routeName,
+                                              argument: DetailArgument(ideas),
+                                            );
+                                          // }
+                                        }
+                                        print("data size : "+ snapshot.data.size.toString() + " Size normal : " + size.toString());
+                                        size++;
+                                        // con = 1;
                                         return Container();
                                       }).toList(),
                                     );
                                   },
                                 );
+                                
+                                // return FutureBuilder(
+                                //   future: checkShow(uid),
+                                //   builder: (context, snapshot) {
+                                //     print('datanya: ' + snapshot.data.toString());
+                                //     if (snapshot.data){
+                                //       return IdeaPostCardView(
+                                //         ideas: ideas,
+                                //         routename: DetailPost.routeName,
+                                //         argument: DetailArgument(ideas),
+                                //       );
+                                //     }
+                                //     return Container();
+                                //   },
+                                // );
                               }).toList(),
                             );
                           },

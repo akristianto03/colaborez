@@ -37,7 +37,10 @@ class _DetailPostState extends State<DetailPost> {
                     });
                     if (value == true) {
                       ActivityServices.showToast("Your request has been send!", cPrimaryColor);
-                      Navigator.pushReplacementNamed(context, JoinIdea.routeName);
+                      Navigator.pushReplacementNamed(
+                        context, JoinIdea.routeName,
+                        arguments: JoinArgument(users)
+                      );
                     } else {
                       ActivityServices.showToast("Can't request join idea", cDangerColor);
                     }
@@ -49,7 +52,9 @@ class _DetailPostState extends State<DetailPost> {
                 child: Text("Yes"),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
                     primary: cDangerColor
                 ),
@@ -61,13 +66,42 @@ class _DetailPostState extends State<DetailPost> {
     );
   }
 
+  CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
+  CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
+  Users users;
+  dynamic data;
+
+  Future<dynamic> getDataUser(Ideas ideas) async {
+
+    final DocumentReference document = userCollection.doc(ideas.ideaBy);
+
+    await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+      setState(() {
+        data =snapshot.data;
+        users = new Users(
+          data()['uid'],
+          data()['email'],
+          data()['password'],
+          data()['firstName'],
+          data()['lastName'],
+          data()['phone'],
+          data()['address'],
+          data()['pic'],
+          data()['createdAt'],
+          data()['updatedAt'],
+        );
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final DetailArgument args = ModalRoute.of(context).settings.arguments as DetailArgument;
+    getDataUser(args.idea);
 
     return Scaffold(
       backgroundColor: Color(0xFFF5F6F9),
-      appBar: CustomAppbar(),
+      appBar: CustomAppbar(users.firstName),
       body: Column(
         children: [
           SizedBox(
@@ -92,23 +126,37 @@ class _DetailPostState extends State<DetailPost> {
                   color: Color(0xFFF5F6F9),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(20)
-                        ),
-                        child: Row(
-                          children: [
-                            ...List.generate(
-                              4,
-                                (index) => ParticipantCircleView()
-                            ),
-                            Spacer(),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.arrow_forward_ios),
-                              color: cTextColor,
-                            )
-                          ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context, Participants.routeName,
+                            arguments: ParticipantsArgument(args.idea)
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: getProportionateScreenWidth(20)
+                          ),
+                          child: StreamBuilder(
+                            stream: ideaCollection.doc(args.idea.ideaId).collection("participants").where("status", isEqualTo: 1).snapshots(),
+                            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text("Error");
+                              }
+
+                              int size=0;
+                              return Row(
+                                children: snapshot.data.docs.map((DocumentSnapshot doc) {
+                                  if (size < 8){
+                                    return ParticipantCircleView(
+                                      participantId: doc.data()['uid'],
+                                    );
+                                  }
+                                  size++;
+                                }).toList(),
+                              );
+                            },
+                          )
                         ),
                       ),
                       TopRoundedContainer(

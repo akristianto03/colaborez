@@ -90,6 +90,13 @@ class IdeaServices{
   static Future<bool> deleteIdea(String id) async {
     bool msg = true;
     await Firebase.initializeApp();
+
+    await ideaCollection.doc(id).collection("participants").get().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs){
+        ds.reference.delete();
+      }
+    });
+    
     await ideaCollection.doc(id).delete().then((value) {
       msg = true;
     }).catchError((onError) {
@@ -163,12 +170,12 @@ class IdeaServices{
 
   }
 
-  static Future<bool> requestIdea(Ideas ideas, Users users) async {
+  static Future<bool> requestIdea(Ideas ideas, String idUser) async {
     await Firebase.initializeApp();
     String dateNow = ActivityServices.dateNow();
     bool msg;
 
-    await ideaCollection.doc(ideas.ideaId).collection("participants").doc(users.uid).update({
+    await ideaCollection.doc(ideas.ideaId).collection("participants").doc(idUser).update({
       'status': 1,
       'updatedAt': dateNow,
     }).then((value) {
@@ -181,11 +188,11 @@ class IdeaServices{
 
   }
 
-  static Future<bool> deleteRequestIdea(Ideas ideas, Users users) async {
+  static Future<bool> deleteRequestIdea(Ideas ideas, String idUser) async {
     await Firebase.initializeApp();
     bool msg;
 
-    await ideaCollection.doc(ideas.ideaId).collection("participants").doc(users.uid).delete().then((value) {
+    await ideaCollection.doc(ideas.ideaId).collection("participants").doc(idUser).delete().then((value) {
       msg = true;
     }).catchError((onError) {
       msg = false;

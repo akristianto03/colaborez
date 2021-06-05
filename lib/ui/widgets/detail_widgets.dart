@@ -1,9 +1,50 @@
 part of 'widgets.dart';
 
-class ParticipantCircleView extends StatelessWidget {
+class ParticipantCircleView extends StatefulWidget {
   const ParticipantCircleView({
-    Key key,
+    Key key, this.participantId,
   }) : super(key: key);
+
+  final String participantId;
+
+  @override
+  _ParticipantCircleViewState createState() => _ParticipantCircleViewState();
+}
+
+class _ParticipantCircleViewState extends State<ParticipantCircleView> {
+
+  CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
+
+  Users users;
+  dynamic data;
+
+  Future<dynamic> getDataUser() async {
+    final DocumentReference document = userCollection.doc(widget.participantId);
+
+    await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+      setState(() {
+        data =snapshot.data;
+        // users = new Users(
+        //   data()['uid'],
+        //   data()['email'],
+        //   data()['password'],
+        //   data()['firstName'],
+        //   data()['lastName'],
+        //   data()['phone'],
+        //   data()['address'],
+        //   data()['pic'],
+        //   data()['createdAt'],
+        //   data()['updatedAt'],
+        // );
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDataUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +53,9 @@ class ParticipantCircleView extends StatelessWidget {
       height: getProportionateScreenWidth(40),
       width: getProportionateScreenWidth(40),
       child: CircleAvatar(
-        backgroundImage: AssetImage(cDefaultPicture),
+        backgroundImage: data()['pic'] == cDefaultPicture
+            ? AssetImage(data()['pic'])
+            : NetworkImage(data()['pic']),
       ),
     );
   }
@@ -148,8 +191,12 @@ class TopRoundedContainer extends StatelessWidget {
 }
 
 class CustomAppbar extends PreferredSize {
+  CustomAppbar(this.name);
+
   @override
   Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +220,7 @@ class CustomAppbar extends PreferredSize {
               child: Row(
                 children: [
                   Text(
-                    "Lorentz",
+                    name,
                     style: TextStyle(
                         fontWeight: FontWeight.w600
                     ),

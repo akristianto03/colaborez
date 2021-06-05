@@ -63,13 +63,30 @@ class _MyDetailPostState extends State<MyDetailPost> {
     );
   }
 
+  CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
+  CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
+
+  dynamic data;
+
+  Future<dynamic> getDataUser(Ideas ideas) async {
+
+    final DocumentReference document = userCollection.doc(ideas.ideaBy);
+
+    await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+      setState(() {
+        data =snapshot.data;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final MyDetailArgument args = ModalRoute.of(context).settings.arguments as MyDetailArgument;
+    getDataUser(args.idea);
 
     return Scaffold(
       backgroundColor: Color(0xFFF5F6F9),
-      appBar: CustomAppbar(),
+      appBar: CustomAppbar(data()['firstName']),
       body: Stack(
         children: [
           Column(
@@ -96,23 +113,33 @@ class _MyDetailPostState extends State<MyDetailPost> {
                       color: Color(0xFFF5F6F9),
                       child: Column(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(20)
-                            ),
-                            child: Row(
-                              children: [
-                                ...List.generate(
-                                    4,
-                                        (index) => ParticipantCircleView()
-                                ),
-                                Spacer(),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.arrow_forward_ios),
-                                  color: cTextColor,
-                                )
-                              ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, Participants.routeName,
+                                  arguments: ParticipantsArgument(args.idea)
+                              );
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(20)
+                              ),
+                              child: StreamBuilder(
+                                stream: ideaCollection.doc(args.idea.ideaId).collection("participants").where("status", isEqualTo: 1).snapshots(),
+                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text("Error");
+                                  }
+
+                                  return Row(
+                                    children: snapshot.data.docs.map((DocumentSnapshot doc) {
+                                      return ParticipantCircleView(
+                                        participantId: doc.data()['uid'].toString(),
+                                      );
+                                    }).toList(),
+                                  );
+                                },
+                              )
                             ),
                           ),
                           TopRoundedContainer(

@@ -85,11 +85,11 @@ class _MainMenuState extends State<MainMenu> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.search_outlined,
+                    Icons.explore_outlined,
                     color: cTextColor,
                   ),
                   activeIcon: Icon(
-                    Icons.search_outlined,
+                    Icons.explore_outlined,
                     color: cPrimaryColor,
                   ),
                   label: '',

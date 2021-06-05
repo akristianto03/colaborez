@@ -1,9 +1,16 @@
 part of '../pages.dart';
 
-class Notification extends StatelessWidget {
+class Notification extends StatefulWidget {
 
+  @override
+  _NotificationState createState() => _NotificationState();
+}
+
+class _NotificationState extends State<Notification> {
   bool isLoading = false;
+
   String uid = FirebaseAuth.instance.currentUser.uid;
+
   CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
 
   @override
@@ -26,7 +33,10 @@ class Notification extends StatelessWidget {
                       stream: ideaCollection.where('ideaBy',isEqualTo: uid).snapshots(),
                       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                         if (snapshot.hasError) {
-                          return Text("Notification");
+                          return Align(
+                            alignment: Alignment.center,
+                            child: Text("Error")
+                          );
                         }
 
                         // if (snapshot.connectionState == ConnectionState.waiting) {
@@ -47,8 +57,6 @@ class Notification extends StatelessWidget {
                               doc.data()['createdAt'],
                               doc.data()['updatedAt'],
                             );
-
-                            int con = 0;
                             return StreamBuilder<QuerySnapshot>(
                               stream: ideaCollection.doc(ideas.ideaId).collection('participants').where('status', isEqualTo: 0).snapshots(),
                               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -61,16 +69,10 @@ class Notification extends StatelessWidget {
 
                                 return Column(
                                   children: snapshot.data.docs.map((DocumentSnapshot doc) {
-                                    if(con == 0){
-                                      con = 1;
-                                      return CardNotification(
-                                        pressSuccess: () {},
-                                        pressDanger: () {},
-                                        ideas: ideas,
-                                        participantId: doc.data()['uid'],
-                                      );
-                                    }
-                                    return Container();
+                                    return CardNotification(
+                                      ideas: ideas,
+                                      participantId: doc.data()['uid'],
+                                    );
                                   }).toList(),
                                 );
                               },
@@ -93,11 +95,9 @@ class Notification extends StatelessWidget {
 
 class CardNotification extends StatefulWidget {
   const CardNotification({
-    Key key, this.pressSuccess, this.pressDanger, this.ideas, this.participantId,
+    Key key, this.ideas, this.participantId,
   }) : super(key: key);
 
-  final Function pressSuccess;
-  final Function pressDanger;
   final Ideas ideas;
   final String participantId;
 
@@ -112,7 +112,6 @@ class _CardNotificationState extends State<CardNotification> {
   dynamic data;
 
   Future<dynamic> getDataUser() async {
-    print("idnya adalah "+widget.participantId);
     final DocumentReference document = userCollection.doc(widget.participantId);
 
     await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
@@ -132,7 +131,7 @@ class _CardNotificationState extends State<CardNotification> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Container(
         padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
@@ -198,7 +197,15 @@ class _CardNotificationState extends State<CardNotification> {
                 Container(
                   width: 40,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () async{
+                      await IdeaServices.requestIdea(widget.ideas, widget.participantId).then((value) {
+                        if (value) {
+                          ActivityServices.showToast ("Now " + data()['firstName'] + " is your partner!", cSuccessColor);
+                        } else {
+                          ActivityServices.showToast("Can't accept request", cDangerColor);
+                        }
+                      });
+                    },
                     icon: Icon(
                       Icons.check_circle,
                       color: cSuccessColor,
@@ -209,7 +216,15 @@ class _CardNotificationState extends State<CardNotification> {
                 Container(
                   width: 40,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () async{
+                      await IdeaServices.deleteRequestIdea(widget.ideas, widget.participantId).then((value) {
+                        if (value) {
+                          ActivityServices.showToast (data()['firstName'] + " rejected", cPrimaryColor);
+                        } else {
+                          ActivityServices.showToast("Can't reject request", cDangerColor);
+                        }
+                      });
+                    },
                     icon: Icon(
                       Icons.remove_circle_rounded,
                       color: cDangerColor,

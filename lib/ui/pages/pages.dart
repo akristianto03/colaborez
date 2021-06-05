@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'login.dart';
 part 'register.dart';
@@ -35,3 +36,4 @@ part 'detail/mydetailpage.dart';
 part 'detail/myeditideas.dart';
 part 'detail/profilesettings.dart';
 part 'detail/editprofile.dart';
+part 'detail/participants.dart';

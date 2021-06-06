@@ -76,6 +76,33 @@ class ProductDescription extends StatefulWidget {
 class _ProductDescriptionState extends State<ProductDescription> {
 
   bool isFavorite = false;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
+  dynamic data;
+
+  Future<dynamic> getDataUser() async {
+    String uid = auth.currentUser.uid;
+    final DocumentReference document = userCollection.doc(uid).collection("favorites").doc(widget.idea.ideaId);
+    await document.get().then<dynamic>(( DocumentSnapshot snapshot) async{
+      setState(() {
+        data =snapshot.data;
+
+        try {
+          print('oeee '+ data()['favorite'].toString());
+          isFavorite = data()['favorite'];
+        } catch (e) {
+          isFavorite = false;
+        }
+      });
+    });
+  }
+
+  @override
+  void initState() {
+
+    super.initState();
+    getDataUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +120,30 @@ class _ProductDescriptionState extends State<ProductDescription> {
         Align(
           alignment: Alignment.centerRight,
           child: GestureDetector(
-            onTap: () {
-              setState(() {
-                isFavorite = !isFavorite;
-              });
+            onTap: () async {
+              // if (con==1) {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+
+                if (isFavorite) {
+                  await IdeaServices.addFavoriteIdea(idea).then((value) {
+                    if (value) {
+                      ActivityServices.showToast("Added to favorite", cPrimaryColor);
+                    } else {
+                      ActivityServices.showToast("Request failed", cDangerColor);
+                    }
+                  });
+                } else {
+                  await IdeaServices.removeFavoriteIdea(idea).then((value) {
+                    if (value) {
+                      ActivityServices.showToast("Remove from favorite", cDangerColor);
+                    } else {
+                      ActivityServices.showToast("Request failed", cDangerColor);
+                    }
+                  });
+                }
+              // }
             },
             child: Container(
               padding: EdgeInsets.all(getProportionateScreenWidth(15)),
@@ -133,32 +180,32 @@ class _ProductDescriptionState extends State<ProductDescription> {
             maxLines: 3,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(20),
-              vertical: 10
-          ),
-          child: GestureDetector(
-            onTap: widget.pressOnSeeMore,
-            child: Row(
-              children: [
-                Text(
-                  "See More Detail",
-                  style: TextStyle(
-                      color: cPrimaryColor,
-                      fontWeight: FontWeight.w600
-                  ),
-                ),
-                SizedBox(width: 5,),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 12,
-                  color: cPrimaryColor,
-                )
-              ],
-            ),
-          ),
-        )
+        // Padding(
+        //   padding: EdgeInsets.symmetric(
+        //       horizontal: getProportionateScreenWidth(20),
+        //       vertical: 10
+        //   ),
+        //   child: GestureDetector(
+        //     onTap: widget.pressOnSeeMore,
+        //     child: Row(
+        //       children: [
+        //         Text(
+        //           "See More Detail",
+        //           style: TextStyle(
+        //               color: cPrimaryColor,
+        //               fontWeight: FontWeight.w600
+        //           ),
+        //         ),
+        //         SizedBox(width: 5,),
+        //         Icon(
+        //           Icons.arrow_forward_ios,
+        //           size: 12,
+        //           color: cPrimaryColor,
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // )
       ],
     );
   }
@@ -174,18 +221,20 @@ class TopRoundedContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: getProportionateScreenWidth(20)),
-      padding: EdgeInsets.only(top: getProportionateScreenWidth(20)),
-      width: double.infinity,
-      decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(40),
-              topLeft: Radius.circular(40)
-          )
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(top: getProportionateScreenWidth(20)),
+        padding: EdgeInsets.only(top: getProportionateScreenWidth(20)),
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(40),
+                topLeft: Radius.circular(40)
+            )
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

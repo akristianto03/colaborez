@@ -84,12 +84,16 @@ class _ProfileState extends State<Profile> {
                         icon: Icons.lightbulb_outline,
                       ),
                       ProfileMenu(
-                        press: () {},
+                        press: () {
+                          Navigator.pushNamed(context, MyPartnerIdeas.routeName);
+                        },
                         text: "My Partnership",
                         icon: Icons.supervisor_account_outlined,
                       ),
                       ProfileMenu(
-                        press: () {},
+                        press: () {
+                          Navigator.pushNamed(context, MyFavorIdeas.routeName);
+                        },
                         text: "My Favorites",
                         icon: Icons.favorite_border_outlined,
                       ),

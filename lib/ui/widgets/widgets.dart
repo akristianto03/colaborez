@@ -3,6 +3,7 @@ import 'package:colaborez/models/models.dart';
 import 'package:colaborez/services/services.dart';
 import 'package:colaborez/shared/shared.dart';
 import 'package:colaborez/ui/pages/pages.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';

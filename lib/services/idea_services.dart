@@ -6,6 +6,7 @@ class IdeaServices{
 
   //setup cloud firestore
   static CollectionReference ideaCollection = FirebaseFirestore.instance.collection("ideas");
+  static CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
   static DocumentReference ideaDocument;
 
   //setup storage
@@ -106,47 +107,22 @@ class IdeaServices{
     return msg;
   }
 
-  // static Future<String> getUserIdeaUserFirstName(String ideaBy) async {
-  //    await FirebaseFirestore.instance
-  //       .collection("users")
-  //       .doc(ideaBy)
-  //       .snapshots()
-  //       .listen((DocumentSnapshot ds) {
-  //     if (ds.exists) {
-  //       return ds.data()['firstName'];
+  // static Future<bool> filterFeedsNotParticipated(String ideaId) async{
+  //   String uid = auth.currentUser.uid;
+  //   bool msg;
+  //   DocumentSnapshot documentSnapshot = await ideaCollection.doc(ideaId).collection("participants").doc().get().then((value) {
+  //     if (value.data()['status'] == 0) {
+  //       msg = true;
+  //     }else {
+  //       msg = false;
   //     }
+  //   }).catchError((onError) {
+  //     msg = true;
   //   });
-  //   return "nama";
+  //
+  //   return msg;
+  //
   // }
-
-  static Future<bool> filterFeedsNotParticipated(String ideaId) async{
-    String uid = auth.currentUser.uid;
-    bool msg;
-    DocumentSnapshot documentSnapshot = await ideaCollection.doc(ideaId).collection("participants").doc().get().then((value) {
-      if (value.data()['status'] == 0) {
-        msg = true;
-      }else {
-        msg = false;
-      }
-    }).catchError((onError) {
-      msg = true;
-    });
-
-
-    // try {
-    //   documentSnapshot = await ideaCollection.doc(ideaId).collection("participants").doc().get();
-    //   if (documentSnapshot.data()['status'] == 1) {
-    //     msg = true;
-    //   }else {
-    //     msg = false;
-    //   }
-    // } catch (e) {
-    //   msg = false;
-    // }
-
-    return msg;
-
-  }
 
   static Future<bool> joinIdea(Ideas ideas) async {
     await Firebase.initializeApp();
@@ -184,6 +160,14 @@ class IdeaServices{
       msg = false;
     });
 
+    if (msg) {
+      int participant = ideas.ideaParticipant + 1;
+      await ideaCollection.doc(ideas.ideaId).update({
+        'ideaParticipant': participant,
+        'updatedAt': dateNow,
+      });
+    }
+
     return msg;
 
   }
@@ -200,6 +184,42 @@ class IdeaServices{
 
     return msg;
 
+  }
+
+  static Future<bool> addFavoriteIdea(Ideas ideas) async {
+    await Firebase.initializeApp();
+    String uid = auth.currentUser.uid;
+    String dateNow = ActivityServices.dateNow();
+
+    bool msg;
+
+    await userCollection.doc(uid).collection("favorites").doc(ideas.ideaId).set({
+      'ideaId': ideas.ideaId,
+      'favorite': true,
+      'createdAt': dateNow,
+      'updatedAt': dateNow,
+    }).then((value) {
+      msg = true;
+    }).catchError((onError) {
+      msg = false;
+    });
+
+    return msg;
+  }
+
+  static Future<bool> removeFavoriteIdea(Ideas ideas) async {
+    await Firebase.initializeApp();
+    String uid = auth.currentUser.uid;
+
+    bool msg;
+
+    await userCollection.doc(uid).collection("favorites").doc(ideas.ideaId).delete().then((value) {
+      msg = true;
+    }).catchError((onError) {
+      msg = false;
+    });
+
+    return msg;
   }
 
 }

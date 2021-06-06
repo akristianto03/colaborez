@@ -203,41 +203,38 @@ class _HomePageState extends State<HomePage> {
                       )
                     ]
                 ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      NewFriends(
-                        image: 'assets/images/men1.jpg',
-                        firstName: 'Clent',
+                child: StreamBuilder(
+                  stream: userCollection.where('pic', isNotEqualTo: null).snapshots(),
+                  builder: (BuildContext contex, AsyncSnapshot<QuerySnapshot> snapshot){
+                    if (snapshot.hasError) {
+                      return Text("Failed to load users");
+                    }
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: new Row(
+                        children: snapshot.data.docs.map((DocumentSnapshot doc) {
+                          Users users;
+                          users = new Users(
+                            doc.data()['uid'],
+                            doc.data()['email'],
+                            doc.data()['password'],
+                            doc.data()['firstName'],
+                            doc.data()['lastName'],
+                            doc.data()['phone'],
+                            doc.data()['address'],
+                            doc.data()['pic'],
+                            doc.data()['createdAt'],
+                            doc.data()['updatedAt'],
+                          );
+
+                          return NewFriends(
+                            users: users
+                          );
+                        }).toList(),
                       ),
-                      NewFriends(
-                        image: 'assets/images/men2.jpg',
-                        firstName: 'Eddie',
-                      ),
-                      NewFriends(
-                        image: 'assets/images/woman1.jpg',
-                        firstName: 'Clara',
-                      ),
-                      NewFriends(
-                        image: 'assets/images/woman2.jpg',
-                        firstName: 'Lorenz',
-                      ),
-                      NewFriends(
-                        image: 'assets/images/woman2.jpg',
-                        firstName: 'Lorenz',
-                      ),
-                      NewFriends(
-                        image: 'assets/images/woman2.jpg',
-                        firstName: 'Lorenz',
-                      ),
-                      NewFriends(
-                        image: 'assets/images/woman2.jpg',
-                        firstName: 'Lorenz',
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             )
@@ -250,12 +247,10 @@ class _HomePageState extends State<HomePage> {
 
 class NewFriends extends StatelessWidget {
   const NewFriends({
-    Key key, this.image, this.firstName, this.idx,
+    Key key, this.users,
   }) : super(key: key);
 
-  final String image;
-  final String firstName;
-  final bool idx;
+  final Users users;
 
   @override
   Widget build(BuildContext context) {
@@ -264,22 +259,34 @@ class NewFriends extends StatelessWidget {
         left: getProportionateScreenWidth(15),
       ),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(
+            context, OtherUser.routeName,
+            arguments: OtherUserArgument(users)
+          );
+        },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(1000),
-              child: Image.asset(
-                image,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-              ),
+              child: users.pic == cDefaultPicture
+                ? Image.asset(
+                  users.pic,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                )
+                : Image.network(
+                  users.pic,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                )
             ),
             SizedBox(height: getProportionateScreenHeight(5),),
             Text(
-              firstName
+              users.firstName
             )
           ],
         ),
@@ -390,46 +397,46 @@ class HeaderWithSearchBox extends StatelessWidget {
                 bottomRight: Radius.circular(36)
               )
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: getProportionateScreenHeight(30)),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            "Hi "+name+"!",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 36
-                            ),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: getProportionateScreenHeight(30)),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Hi "+name+"!",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 36
                           ),
-                          Text(
-                            "Have a Nice Day",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(width: getProportionateScreenWidth(80),),
-                      SizedBox(
-                        height: 80,
-                        width: 80,
-                        child: CircleAvatar(
-                          backgroundImage: pic == cDefaultPicture
-                              ? AssetImage(pic)
-                              : NetworkImage(pic),
                         ),
-                      )
-                    ],
+                        Text(
+                          "Have a Nice Day",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )
-              ],
+                  // SizedBox(width: getProportionateScreenWidth(70),),
+                  SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: CircleAvatar(
+                      backgroundImage: pic == cDefaultPicture
+                          ? AssetImage(pic)
+                          : NetworkImage(pic),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           // Positioned(

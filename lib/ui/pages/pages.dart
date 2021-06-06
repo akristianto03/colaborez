@@ -39,3 +39,6 @@ part 'detail/editprofile.dart';
 part 'detail/participants.dart';
 part 'detail/profileinfo.dart';
 part 'detail/otheruserinfo.dart';
+part 'detail/myfavorideas.dart';
+part 'detail/mypartnerideas.dart';
+part 'detail/mydetailpartner.dart';

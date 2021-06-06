@@ -49,6 +49,9 @@ class MyApp extends StatelessWidget {
         Participants.routeName : (context) => Participants(),
         ProfileInfo.routeName : (context) => ProfileInfo(),
         OtherUser.routeName : (context) => OtherUser(),
+        MyFavorIdeas.routeName : (context) => MyFavorIdeas(),
+        MyPartnerIdeas.routeName : (context) => MyPartnerIdeas(),
+        MyDetailPartner.routeName : (context) => MyDetailPartner(),
       },
     );
   }

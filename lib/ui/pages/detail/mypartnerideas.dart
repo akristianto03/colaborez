@@ -19,7 +19,7 @@ class _MyPartnerIdeasState extends State<MyPartnerIdeas> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'My Favorite Ideas'
+            'My Partnership'
         ),
       ),
       body: SafeArea(
@@ -67,7 +67,7 @@ class _MyPartnerIdeasState extends State<MyPartnerIdeas> {
                                     int con = 0;
                                     return Column(
                                       children: snapshot.data.docs.map((DocumentSnapshot doc) {
-                                        if (con==0) {
+                                        if (con==0 && doc.data()['uid'] == uid) {
                                           con = 1;
                                           return IdeaPostCardView(
                                             ideas: ideas,
@@ -75,7 +75,6 @@ class _MyPartnerIdeasState extends State<MyPartnerIdeas> {
                                             argument: MyDetailPartnerArgument(ideas),
                                           );
                                         }
-                                        con=1;
                                         return Container();
                                       }).toList(),
                                     );

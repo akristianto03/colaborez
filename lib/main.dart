@@ -13,7 +13,7 @@ void enablePlatformOverrideForDesktop(){
 }
 
 void main() async{
-  // ErrorWidget.builder = (FlutterErrorDetails details) => Container();
+  ErrorWidget.builder = (FlutterErrorDetails details) => Container();
   enablePlatformOverrideForDesktop();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

@@ -186,6 +186,29 @@ class IdeaServices{
 
   }
 
+  static Future<bool> leaveIdea(Ideas ideas, String idUser) async {
+    await Firebase.initializeApp();
+    String dateNow = ActivityServices.dateNow();
+    bool msg;
+
+    await ideaCollection.doc(ideas.ideaId).collection("participants").doc(idUser).delete().then((value) {
+      msg = true;
+    }).catchError((onError) {
+      msg = false;
+    });
+
+    if (msg) {
+      int participant = ideas.ideaParticipant - 1;
+      await ideaCollection.doc(ideas.ideaId).update({
+        'ideaParticipant': participant,
+        'updatedAt': dateNow,
+      });
+    }
+
+    return msg;
+
+  }
+
   static Future<bool> addFavoriteIdea(Ideas ideas) async {
     await Firebase.initializeApp();
     String uid = auth.currentUser.uid;

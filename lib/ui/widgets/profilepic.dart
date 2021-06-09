@@ -71,7 +71,7 @@ class _ProfilePicState extends State<ProfilePic> {
                     });
                   }
                 },
-                icon: Icon(Icons.picture_as_pdf_outlined),
+                icon: Icon(Icons.photo_album_rounded),
                 label: Text("Gallery"),
               )
             ],

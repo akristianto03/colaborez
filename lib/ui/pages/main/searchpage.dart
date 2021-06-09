@@ -107,21 +107,24 @@ class _SearchState extends State<Search> {
                             return new Column(
                               children: snapshot.data.docs.map((DocumentSnapshot doc) {
                                 Ideas ideas;
-                                ideas = new Ideas(
-                                  doc.data()['ideaId'],
-                                  doc.data()['ideaTitle'],
-                                  doc.data()['ideaDesc'],
-                                  doc.data()['ideaCategory'],
-                                  doc.data()['ideaImage'],
-                                  doc.data()['ideaMaxParticipants'],
-                                  doc.data()['ideaParticipant'],
-                                  doc.data()['ideaBy'],
-                                  doc.data()['createdAt'],
-                                  doc.data()['updatedAt'],
-                                );
+                                if (doc.data()['ideaParticipant'] < doc.data()['ideaMaxParticipants']) {
+                                  ideas = new Ideas(
+                                    doc.data()['ideaId'],
+                                    doc.data()['ideaTitle'],
+                                    doc.data()['ideaDesc'],
+                                    doc.data()['ideaCategory'],
+                                    doc.data()['ideaImage'],
+                                    doc.data()['ideaMaxParticipants'],
+                                    doc.data()['ideaParticipant'],
+                                    doc.data()['ideaBy'],
+                                    doc.data()['createdAt'],
+                                    doc.data()['updatedAt'],
+                                  );
+                                }
                                 int size = 1;
                                 bool showIdea = false;
                                 bool block = false;
+                                if (doc.data()['ideaParticipant'] < doc.data()['ideaMaxParticipants']) {
                                 return StreamBuilder<QuerySnapshot>(
                                   stream: ideaCollection.doc(ideas.ideaId).collection('participants').snapshots(),
                                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -159,6 +162,9 @@ class _SearchState extends State<Search> {
                                     );
                                   },
                                 );
+                                }
+
+                                return Container();
                                 
                                 // return FutureBuilder(
                                 //   future: checkShow(uid),

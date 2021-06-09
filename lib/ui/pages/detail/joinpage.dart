@@ -16,7 +16,8 @@ class JoinIdea extends StatefulWidget {
 class _JoinIdeaState extends State<JoinIdea> {
 
   void launchWA(String phone) async {
-    String url = "whatsapp://send?phone="+phone+"&text=test";
+    String phone62 = "+62"+phone.substring(1);
+    String url = "whatsapp://send?phone="+phone62+"&text=Hai!";
     if (await canLaunch(url)) {
       await launch(url);
     } else {

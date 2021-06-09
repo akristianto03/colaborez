@@ -193,7 +193,7 @@ class _AddPostState extends State<AddPost> {
           dropdownValue = value;
         });
       },
-      items: <String>['Culinary', 'Services', 'Design', 'Photography/Viedography', 'Non-Profit', 'Industry']
+      items: <String>['Culinary', 'Services', 'Design', 'Visual', 'Non-Profit', 'Industry']
         .map<DropdownMenuItem<String>>((value) {
           return DropdownMenuItem<String>(
             value: value,

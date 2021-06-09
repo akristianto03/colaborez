@@ -31,7 +31,7 @@ class _ParticipantsState extends State<Participants> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings"),
+        title: Text("Participants"),
       ),
       body: SafeArea(
         child: SizedBox(

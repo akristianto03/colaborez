@@ -146,6 +146,51 @@ class _MyDetailPostState extends State<MyDetailPost> {
                             color: Colors.white,
                             child: Stack(
                               children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Info",
+                                        style: Theme.of(context).textTheme.headline6,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "Category :"
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                              args.idea.ideaCategory
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "Participants :"
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                              args.idea.ideaParticipant.toString()
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "Max Participants :"
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                              args.idea.ideaMaxParticipants.toString()
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
                                 Container(
                                   padding: EdgeInsets.only(
                                       left: SizeConfig.screenWidth * 0.08,

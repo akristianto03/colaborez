@@ -130,6 +130,7 @@ class _CardNotificationState extends State<CardNotification> {
 
   @override
   Widget build(BuildContext context) {
+    getDataUser();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Container(
@@ -172,7 +173,7 @@ class _CardNotificationState extends State<CardNotification> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data()['firstName']+" ingin bekerja sama denganmu",
+                    data()['firstName']+" want to join partnership",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                     ]
                 ),
                 child: StreamBuilder(
-                  stream: userCollection.where('pic', isNotEqualTo: null).snapshots(),
+                  stream: userCollection.where('pic', isNotEqualTo: null).where('uid', isNotEqualTo: uid).snapshots(),
                   builder: (BuildContext contex, AsyncSnapshot<QuerySnapshot> snapshot){
                     if (snapshot.hasError) {
                       return Text("Failed to load users");
